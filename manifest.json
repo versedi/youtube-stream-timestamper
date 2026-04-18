@@ -3,6 +3,7 @@
   "name": "YouTube Stream Timestamper",
   "version": "1.0.0",
   "description": "Copy a timestamped link while watching a YouTube stream or video — like Clips, but manual.",
+  "homepage_url": "https://github.com/versedi/youtube-stream-timestamper",
   "permissions": [
     "clipboardWrite",
     "*://www.youtube.com/*"
@@ -20,7 +21,6 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "youtube-stream-timestamper@local",
       "strict_min_version": "109.0"
     }
   }
