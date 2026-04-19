@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "YouTube Stream Timestamper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Copy a timestamped link while watching a YouTube stream or video — like Clips, but manual.",
   "homepage_url": "https://github.com/versedi/youtube-stream-timestamper",
   "permissions": [
