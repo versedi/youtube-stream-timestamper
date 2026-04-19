@@ -7,6 +7,10 @@ const TOAST_ID = 'yt-timestamper-toast';
 // ── URL helpers ────────────────────────────────────────────────────────────
 
 function getVideoId() {
+  const path = window.location.pathname;
+  if (path.startsWith('/live/')) {
+    return path.split('/live/')[1].split('/')[0] || null;
+  }
   return new URLSearchParams(window.location.search).get('v');
 }
 
@@ -170,6 +174,10 @@ function removeButton() {
 
 let lastUrl = location.href;
 
+function isWatchPage() {
+  return location.pathname === '/watch' || location.pathname.startsWith('/live/');
+}
+
 function onMutation() {
   const currentUrl = location.href;
 
@@ -178,7 +186,7 @@ function onMutation() {
     removeButton(); // clean up from previous page
   }
 
-  if (location.pathname === '/watch') {
+  if (isWatchPage()) {
     injectButton();
   }
 }
@@ -187,6 +195,6 @@ const observer = new MutationObserver(onMutation);
 observer.observe(document.documentElement, { childList: true, subtree: true });
 
 // Try immediately in case player is already in the DOM
-if (location.pathname === '/watch') {
+if (isWatchPage()) {
   injectButton();
 }
