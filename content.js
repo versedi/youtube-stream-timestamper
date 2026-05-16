@@ -169,32 +169,35 @@ function removeButton() {
 }
 
 // ── SPA navigation handling ────────────────────────────────────────────────
-// YouTube is a single-page app; the content script persists across navigations,
-// so we observe DOM mutations and react to URL changes.
-
-let lastUrl = location.href;
+// YouTube fires yt-navigate-finish when SPA navigation completes and the new
+// page DOM is ready — same event SponsorBlock relies on.
 
 function isWatchPage() {
   return location.pathname === '/watch' || location.pathname.startsWith('/live/');
 }
 
-function onMutation() {
-  const currentUrl = location.href;
+function waitForControls(timeout = 10000) {
+  const existing = document.querySelector('.ytp-right-controls');
+  if (existing) { injectButton(); return; }
 
-  if (currentUrl !== lastUrl) {
-    lastUrl = currentUrl;
-    removeButton(); // clean up from previous page
-  }
-
-  if (isWatchPage()) {
-    injectButton();
-  }
+  let settled = false;
+  const observer = new MutationObserver(() => {
+    if (document.querySelector('.ytp-right-controls')) {
+      settled = true;
+      observer.disconnect();
+      injectButton();
+    }
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(() => { if (!settled) observer.disconnect(); }, timeout);
 }
 
-const observer = new MutationObserver(onMutation);
-observer.observe(document.documentElement, { childList: true, subtree: true });
-
-// Try immediately in case player is already in the DOM
-if (isWatchPage()) {
-  injectButton();
+function onNavigateFinish() {
+  removeButton();
+  if (isWatchPage()) waitForControls();
 }
+
+document.addEventListener('yt-navigate-finish', onNavigateFinish);
+
+// Initial page load (direct URL, not SPA nav)
+if (isWatchPage()) waitForControls();
